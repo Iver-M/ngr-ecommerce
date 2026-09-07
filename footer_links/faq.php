@@ -1,4 +1,5 @@
-<?php 
+<?php
+require_once dirname(__DIR__) . '/core/paths.php';
 include 'includes/header.php'; 
 ?>
 

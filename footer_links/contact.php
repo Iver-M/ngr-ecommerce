@@ -1,4 +1,5 @@
 <?php
+require_once dirname(__DIR__) . '/core/paths.php';
 session_start();
 require 'config/db.php';
 

@@ -7,3 +7,19 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 # 2. Remove "www." to prevent SSL mismatch warnings
 RewriteCond %{HTTP_HOST} ^www\.(.*)$ [NC]
 RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+# 3. Keep the original public URLs while the source files live in feature folders.
+RewriteRule ^(login|register|forgot_password|reset_password|verify)\.php$ modules/auth/$1.php [L,QSA]
+RewriteRule ^(products|product)\.php$ modules/catalog/$1.php [L,QSA]
+RewriteRule ^(cart|wishlist)\.php$ modules/cart/$1.php [L,QSA]
+RewriteRule ^checkout\.php$ modules/checkout/checkout.php [L,QSA]
+RewriteRule ^(profile|my_orders|print_invoice)\.php$ modules/account/$1.php [L,QSA]
+RewriteRule ^(admin_dashboard|info)\.php$ modules/admin/$1.php [L,QSA]
+RewriteRule ^(faq|page)\.php$ modules/support/$1.php [L,QSA]
+
+RewriteRule ^(register_process|logout|admin_logout)\.php$ actions/auth/$1.php [L,QSA]
+RewriteRule ^(add_to_cart|add_all_to_cart)\.php$ actions/cart/$1.php [L,QSA]
+RewriteRule ^(add_to_wishlist|remove_from_wishlist|clear_wishlist)\.php$ actions/wishlist/$1.php [L,QSA]
+RewriteRule ^(apply_voucher|create_paypal_order|capture_paypal_order)\.php$ actions/checkout/$1.php [L,QSA]
+RewriteRule ^(mark_one_notification_read|request_cancellation|submit_return_request|submit_review|download_proof)\.php$ actions/account/$1.php [L,QSA]
+RewriteRule ^submit_ticket\.php$ actions/support/submit_ticket.php [L,QSA]
