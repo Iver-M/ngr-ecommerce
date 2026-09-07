@@ -1,0 +1,17 @@
+# Credentials
+.env
+*.env
+/config/db.php
+
+# Customer/private uploads
+/uploads/return_videos/
+/uploads/profile_pictures/*
+!/uploads/profile_pictures/default.png
+
+# Recovery codes and private files
+/uploads/images/media/*.txt
+
+# Local files
+.DS_Store
+Thumbs.db
+*.log

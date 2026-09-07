@@ -1,0 +1,138 @@
+ /* Base Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: system-ui, sans-serif;
+  background: #000;
+  color: #fff;
+  display: flex;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background: #111;
+  min-height: 100vh;
+  padding: 20px;
+}
+.profile-info {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.profile-info .avatar {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  background: linear-gradient(-45deg, #ff5c1c, yellow);
+}
+.profile-info h2 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+.profile-info .balance {
+  font-size: 14px;
+  color: #ff5c1c;
+}
+.sidebar-menu {
+  list-style: none;
+}
+.sidebar-menu li {
+  margin: 12px 0;
+}
+.sidebar-menu a {
+  text-decoration: none;
+  color: #ddd;
+  font-size: 15px;
+  transition: color 0.3s;
+}
+.sidebar-menu a:hover,
+.sidebar-menu li.active a {
+  color: #ff5c1c;
+}
+
+/* Main Profile Section */
+.profile-content {
+  flex: 1;
+  padding: 40px;
+  background: #000;
+}
+.profile-content h1 {
+  font-size: 26px;
+  margin-bottom: 20px;
+  color: #ff5c1c;
+}
+
+/* Form */
+.profile-form {
+  background: #111;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 600px;
+}
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+.form-group input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background: #222;
+  color: #fff;
+}
+.form-group input:focus {
+  outline: none;
+  border-color: #ff5c1c;
+}
+.gender-options {
+  display: flex;
+  gap: 20px;
+}
+.gender-options label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.gender-options input {
+  accent-color: #ff5c1c;
+}
+
+/* Buttons */
+.form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+.btn-save,
+.btn-cancel {
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-save {
+  background: #ff5c1c;
+  color: #000;
+}
+.btn-save:hover {
+  background: #ff7c3a;
+}
+.btn-cancel {
+  background: #222;
+  color: #fff;
+  border: 1px solid #444;
+}
+.btn-cancel:hover {
+  background: #333;
+}

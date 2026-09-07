@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap');
+
+body {
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: url('../uploads/images/media/logreg-bg.jpg') center center/cover no-repeat;
+    background-size: cover; 
+    background-position: center;
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 30px; /* optional, for spacing on small screens */
+    overflow-y: auto; 
+}
+
+.container {
+    background: linear-gradient(90deg, #19283e 0%, #0d1523 100%);
+    width: 900px;
+    border-radius: 40px;
+    display: flex;
+    overflow: hidden;
+    box-shadow: 0 30px 50px rgba(0,0,0,0.6);
+}
+
+.left {
+  background: linear-gradient(90deg, #471a08 0%, #111 100%);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 40px 50px;
+  color: #f0f0f0;
+}
+
+.logreg-brand{
+  width: 50px;
+  height: 40px;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 28px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+}
+
+.logo span {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: -1px;
+  color: white;
+  text-transform: uppercase;
+  text-shadow: 0px 0px 0px rgba(0,0,0,0.7);
+  display: inline-block;
+  padding: 10px 20px;
+}
+
+h1 {
+  margin-top: 40px;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+p.subtitle {
+  color: #a5acc6;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  margin-bottom: 30px;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.8px;
+  color: #8a95af;
+  margin-bottom: 6px;
+  display: block;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+    width: 93%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;  /* spacing between fields */
+    background-color: #573127;
+    color: #d8dfea;
+    font-size: 14px;
+    display: block;
+}
+
+input::placeholder {
+  color: #8693b6;
+}
+
+.password-wrapper {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 13px;
+  cursor: pointer;
+  user-select: none;
+  color: #8693b6;
+}
+
+.forgot {
+  font-size: 11px;
+  color: #b8b8b8;
+  text-align: right;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: -16px;
+  margin-bottom: 24px;
+  display: block;
+}
+.forgot:hover {
+  color: #ffffff;
+}
+
+button {
+  background: linear-gradient(180deg, #ff5c1c 0%, #ff5c1c 100%);
+  color: #f2f6ff;
+  border: none;
+  padding: 12px 0;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+  box-shadow: 0 5px 10px #ff5c1c;
+  letter-spacing: 0.6px;
+  transition: all 0.2s ease-in-out;
+}
+button:hover {
+  background: #ff7b46;
+  box-shadow: 0 8px 20px #ff5c1c;
+}
+
+.error-msg {
+  color: #ff6666;
+  margin-bottom: 15px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 10px;
+  text-align: center;
+  color: #6f7a9b;
+}
+
+.right {
+  flex: 1.2;
+  background: url('../uploads/images/logo/login-bg.jpeg') center center/cover no-repeat;
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  position: relative;
+}
+
+.right::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(65, 65, 65, 0.7);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+/* Responsive for smaller screens */
+@media screen and (max-width: 768px) {
+  .container {
+    flex-direction: column;
+    width: 90%;
+    height: auto;
+  }
+
+  .left {
+    flex: 1;
+    padding: 30px 20px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .right {
+    display: none; /* Hide the image on small screens */
+  }
+}
+/* OTP Overlay */
+#otpOverlay {
+    display: none;           /* Hidden by default */
+    position: fixed;
+    inset: 0;                /* top:0; right:0; bottom:0; left:0; */
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+#otpBox {
+    background: #152841;
+    padding: 40px 30px;
+    border-radius: 20px;
+    width: 320px;
+    max-width: 90%;
+    color: #f0f0f0;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    font-family: 'Poppins', sans-serif;
+}
+
+#otpBox h3 {
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 20px;
+}
+
+#otpBox p {
+    font-size: 13px;
+    margin-bottom: 20px;
+    color: #a5acc6;
+}
+
+#otpBox input {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 20px;
+    background-color: #273857;
+    color: #d8dfea;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+}
+
+#otpBox button {
+    background: linear-gradient(180deg, #2e54ff 0%, #243fbe 100%);
+    color: #f2f6ff;
+    border: none;
+    padding: 12px 0;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    width: 100%;
+    box-shadow: 0 5px 10px #1a36b8;
+    letter-spacing: 0.6px;
+    transition: all 0.2s ease-in-out;
+}
+
+#otpBox button:hover {
+    background: #445dfd;
+    box-shadow: 0 8px 20px #1a36b8;
+}
+
+#otpBox #otpMessage {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
