@@ -1,0 +1,98 @@
+name: Validate PHP and deploy to InfinityFree
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: infinityfree-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_mysql, curl, openssl, fileinfo
+          coverage: none
+      - name: Check PHP syntax
+        run: |
+          find index.php app config includes footer_links PHPMailer sendgrid scripts -type f -name '*.php' -print0 |
+          while IFS= read -r -d '' file; do
+            php -l "$file" > /tmp/php-lint.txt 2>&1 || { cat /tmp/php-lint.txt; exit 1; }
+          done
+      - name: Verify public routes
+        run: php scripts/verify-routes.php
+      - name: Check for private files and credential patterns
+        run: python3 scripts/check-secrets.py
+      - name: Test routing and private configuration
+        run: python3 tests/routing_test.py
+
+  deploy:
+    needs: validate
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && vars.INFINITYFREE_DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: infinityfree
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.3'
+          coverage: none
+      - name: Validate deployment destination
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_SERVER_DIR: ${{ vars.FTP_SERVER_DIR }}
+        run: |
+          for setting in FTP_SERVER FTP_USERNAME FTP_PASSWORD; do
+            if [ -z "${!setting}" ]; then echo "Missing setting: $setting"; exit 1; fi
+          done
+          if [[ "$FTP_SERVER_DIR" != */htdocs/ || "$FTP_SERVER_DIR" == *..* ]]; then
+            echo 'FTP_SERVER_DIR must end in /htdocs/ (for example /htdocs/).'
+            exit 1
+          fi
+      - name: Prepare code without replacing hosted uploads
+        run: |
+          mkdir .deploy
+          rsync -a --exclude '.git/' --exclude '.github/' --exclude '.deploy/' \
+            --exclude 'docs/' --exclude 'scripts/' --exclude 'tests/' \
+            --exclude 'README.md' --exclude 'config/local.php' \
+            --exclude 'config/local.example.php' --exclude 'uploads/' ./ .deploy/
+      - name: Generate private production configuration
+        env:
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          PAYPAL_CLIENT_ID: ${{ secrets.PAYPAL_CLIENT_ID }}
+          PAYPAL_CLIENT_SECRET: ${{ secrets.PAYPAL_CLIENT_SECRET }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          MAIL_FROM: ${{ vars.MAIL_FROM }}
+          MAIL_FROM_NAME: ${{ vars.MAIL_FROM_NAME }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          PAYPAL_API_URL: ${{ vars.PAYPAL_API_URL }}
+        run: php scripts/write-production-config.php .deploy/config/local.php
+      - name: Upload to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          local-dir: ./.deploy/
+          server-dir: ${{ vars.FTP_SERVER_DIR }}
+          dangerous-clean-slate: false
+          log-level: minimal
+          exclude: |
+            **/uploads/**

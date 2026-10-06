@@ -1,7 +1,6 @@
 <?php
-require_once dirname(__DIR__) . '/core/paths.php';
 session_start();
-require 'config/db.php';
+require __DIR__ . '/../config/db.php';
 
 $success_message = '';
 $error_message = '';
@@ -29,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-include 'includes/header.php';
+include __DIR__ . '/../includes/header.php';
 ?>
 
 <style>
@@ -92,4 +91,4 @@ include 'includes/header.php';
     </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>

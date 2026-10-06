@@ -1,17 +1,21 @@
-# Credentials
+# Private credentials and local configuration
+/config/local.php
 .env
+.env.*
 *.env
-/config/db.php
+!*.env.example
+!sendgrid/.env.sample
 
-# Customer/private uploads
+# Customer files and private uploads
 /uploads/return_videos/
 /uploads/profile_pictures/*
 !/uploads/profile_pictures/default.png
-
-# Recovery codes and private files
 /uploads/images/media/*.txt
+*.sql
+*.sql.gz
 
-# Local files
+# Local and deployment artifacts
+/.deploy/
 .DS_Store
 Thumbs.db
 *.log

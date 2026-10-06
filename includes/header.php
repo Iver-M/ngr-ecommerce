@@ -19,7 +19,7 @@ if (isset($_SESSION['user_id'])) { // Check if user is logged in
 // --- END OF SESSION TIMEOUT LOGIC ---
 // Connect to DB if not already connected
 if (!isset($pdo)) {
-    require_once 'config/db.php';
+    require_once __DIR__ . '/../config/db.php';
 }
 
 $cart_item_count = 0;
@@ -119,7 +119,7 @@ function time_ago($datetime, $full = false) {
         </a>
         <ul>
             <li><a class="nav-link" href="index.php">Home</a></li>
-			<li><a class="nav-link" href="https://ngr.infinityfree.me/index.php#about">About</a></li>            <li><a class="nav-link" href="products.php">Shop</a></li>
+			<li><a class="nav-link" href="#about">About</a></li>            <li><a class="nav-link" href="products.php">Shop</a></li>
             <li><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#contactModal" style=>Contact</a></li>
         </ul> 
         <div class="login-link d-flex align-items-center">

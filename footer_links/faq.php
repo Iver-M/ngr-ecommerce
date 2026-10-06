@@ -1,6 +1,5 @@
-<?php
-require_once dirname(__DIR__) . '/core/paths.php';
-include 'includes/header.php'; 
+<?php 
+include __DIR__ . '/../includes/header.php'; 
 ?>
 
 <style>
@@ -69,4 +68,4 @@ include 'includes/header.php';
         </div>
 </div>
 
-<?php include 'includes/footer.php'; ?>
+<?php include __DIR__ . '/../includes/footer.php'; ?>
