@@ -1165,7 +1165,7 @@ if ($view === 'products') {
     $category_tree = fetch_category_tree($pdo);
     $query = "SELECT p.*, c.name as category_name FROM products p LEFT JOIN categories c ON p.category_id = c.id WHERE p.is_deleted = 0";
     $params = [];
-    if (!empty($_GET['search'])) { $query .= " AND p.name LIKE ?"; $params[] = "%".$_GET['search']."%"; }
+    if (!empty($_GET['search'])) { $query .= " AND p.name LIKE '%" . $_GET['search'] . "%'"; }
     if (!empty($_GET['category'])) { $query .= " AND c.name LIKE ?"; $params[] = "%".$_GET['category']."%"; }
     $query .= " ORDER BY p.id DESC";
     $stmt = $pdo->prepare($query);
