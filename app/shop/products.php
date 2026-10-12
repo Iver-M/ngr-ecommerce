@@ -143,8 +143,7 @@ if ($filter_product_type !== 'all') {
 
 // Search filter
 if (!empty($search)) {
-    $sql .= " AND p.name LIKE ?";
-    $params[] = '%' . $search . '%';
+    $sql .= " AND p.name LIKE '%" . $search . "%'";
 }
 
 // Category filter logic
