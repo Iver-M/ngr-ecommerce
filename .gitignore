@@ -1,5 +1,6 @@
 # Private credentials and local configuration
 /config/local.php
+/config/login-attempts.json
 .env
 .env.*
 *.env

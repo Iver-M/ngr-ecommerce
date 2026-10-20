@@ -1,131 +1,52 @@
 <?php
 session_start();
 require __DIR__ . '/../../config/db.php';
+require_once __DIR__ . '/../../includes/login_throttle.php';
 
-$error = ""; 
-$success = ""; 
-
-/*
-|--------------------------------------------------------------------------
-| INTENTIONALLY VULNERABLE LAB VERSION
-|--------------------------------------------------------------------------
-| Use only with a separate dummy database/table on localhost, XAMPP,
-| Laragon, or an isolated VM.
-|
-| DO NOT replace the publicly accessible NewGrounds login page with this.
-|--------------------------------------------------------------------------
-*/
-
-// Check for session expiration message
+$error = '';
+$success = '';
+$email = '';
 if (isset($_GET['reason']) && $_GET['reason'] === 'session_expired') {
-    $error = "Your session has expired due to inactivity. Please log in again.";
+    $error = 'Your session has expired due to inactivity. Please log in again.';
 }
 
-
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-
-    /*
-    |--------------------------------------------------------------------------
-    | INTENTIONALLY NOT SANITIZED
-    |--------------------------------------------------------------------------
-    */
-
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | INTENTIONAL SQL INJECTION VULNERABILITY
-    |--------------------------------------------------------------------------
-    |
-    | Your original secure version:
-    |
-    | $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-    | $stmt->execute([$email]);
-    |
-    | This lab version directly inserts the input into SQL.
-    |
-    */
-
-    $sql = "SELECT * FROM users
-            WHERE email = '$email'
-            LIMIT 1";
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = isset($_POST['email']) && is_string($_POST['email']) ? trim($_POST['email']) : '';
+    $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
 
     try {
+        $limit = login_throttle_reserve(
+            __DIR__ . '/../../config/login-attempts.json',
+            $email,
+            $_SERVER['REMOTE_ADDR'] ?? 'unknown'
+        );
 
-        $stmt = $pdo->query($sql);
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		 if (!$user || !password_verify($password, $user['password'])) {
-            $user = false;
-        }
-        
-        if ($user) {
-
-            /*
-            |--------------------------------------------------------------------------
-            | LOGIN SUCCESS
-            |--------------------------------------------------------------------------
-            */
-
-            $_SESSION['user_id'] = $user['id'];
-
-            $_SESSION['user_name'] =
-                $user['first_name'] . " " . $user['last_name'];
-
-            $_SESSION['user_email'] = $user['email'];
-
-            $_SESSION['user_role'] = $user['role'];
-
-            $_SESSION['last_activity'] = time();
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Redirect based on role
-            |--------------------------------------------------------------------------
-            */
-
-            if ($user['role'] === 'admin') {
-
-                header("Location: admin_dashboard.php");
-
-            } else {
-
-                header("Location: index.php");
-
-            }
-
-            exit();
-
-
+        if (!$limit['allowed']) {
+            http_response_code(429);
+            header('Retry-After: ' . $limit['retry_after']);
+            $error = 'Too many login attempts. Please try again later.';
         } else {
+            $stmt = $pdo->prepare('SELECT * FROM users WHERE email = ? LIMIT 1');
+            $stmt->execute([$email]);
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            /*
-            |--------------------------------------------------------------------------
-            | INTENTIONAL REFLECTED XSS VULNERABILITY
-            |--------------------------------------------------------------------------
-            |
-            | Password input is intentionally reflected into the response.
-            |
-            | The HTML below also intentionally prints $error without
-            | htmlspecialchars().
-            |
-            */
-
-            $error = "Invalid email or password. " . $password;
-
+            if ($user && $password !== '' && password_verify($password, $user['password'])) {
+                session_regenerate_id(true);
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['user_name'] = $user['first_name'] . ' ' . $user['last_name'];
+                $_SESSION['user_email'] = $user['email'];
+                $_SESSION['user_role'] = $user['role'];
+                $_SESSION['last_activity'] = time();
+                header('Location: ' . ($user['role'] === 'admin' ? 'admin_dashboard.php' : 'index.php'));
+                exit;
+            }
+            $error = 'Invalid email or password.';
         }
-
-
-    } catch (PDOException $e) {
-
-        $error = "Invalid email or password.";
-
+    } catch (Throwable $e) {
+        error_log('Login failed: ' . get_class($e));
+        http_response_code(503);
+        $error = 'Login is temporarily unavailable. Please try again later.';
     }
-
 }
 ?>
 
@@ -150,21 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h1>LOGIN</h1>
 
     <?php if ($error): ?>
-
-      <!--
-          INTENTIONALLY VULNERABLE TO XSS
-
-          Your original secure version was:
-
-          <div class="error-msg">
-              <?= htmlspecialchars($error) ?>
-          </div>
-
-          For the laboratory version, htmlspecialchars()
-          is intentionally removed.
-      -->
-
-      <div class="error-msg"><?= $error ?></div>
+      <div class="error-msg"><?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?></div>
 
     <?php endif; ?>
 
@@ -185,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         id="email"
         name="email"
         required
-        value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>"
+        value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"
       />
 
 
