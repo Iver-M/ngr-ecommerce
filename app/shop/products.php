@@ -83,7 +83,7 @@ if (isset($_SESSION['message'])): ?>
 <?php endif;
 
 // Get filters from URL
-$search = $_GET['search'] ?? '';
+$search = isset($_GET['search']) && is_string($_GET['search']) ? $_GET['search'] : '';
 $sort_by = $_GET['sort_by'] ?? 'recently_added';
 $selected_category_id = isset($_GET['category']) && !empty($_GET['category']) ? (int)$_GET['category'] : null;
 
@@ -143,7 +143,8 @@ if ($filter_product_type !== 'all') {
 
 // Search filter
 if (!empty($search)) {
-    $sql .= " AND p.name LIKE '%" . $search . "%'";
+    $sql .= " AND p.name LIKE ?";
+    $params[] = '%' . $search . '%';
 }
 
 // Category filter logic
